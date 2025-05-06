@@ -8,6 +8,7 @@
 - TypeScript
 - Telegram Web App API
 - Material-UI
+- @vkruglikov/react-telegram-web-app
 
 ## Установка
 
