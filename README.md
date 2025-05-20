@@ -23,7 +23,11 @@ npm install
 
 3. Запустите проект:
 ```bash
-npm start
+$env:HOST="0.0.0.0"; npm start
+```
+4. Запустить хостинг ngrok в PowerShell:
+```
+ngrok http 3000 
 ```
 
 ## Функциональность
