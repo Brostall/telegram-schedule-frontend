@@ -93,7 +93,7 @@ const SchedulePage: React.FC<Props> = ({ group, onBack }) => {
     </div>
   );
 
-  const scheduleByDay = schedule.reduce((acc, item) => {
+  const scheduleByDay = schedule.reduce((acc: Record<string, ScheduleItem[]>, item: ScheduleItem) => {
     if (!acc[item.dayOfWeek]) {
       acc[item.dayOfWeek] = [];
     }
@@ -103,7 +103,7 @@ const SchedulePage: React.FC<Props> = ({ group, onBack }) => {
 
   const daysOrder = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница'];
   const sortedDays = Object.keys(scheduleByDay).sort(
-    (a, b) => daysOrder.indexOf(a) - daysOrder.indexOf(b)
+    (a: string, b: string) => daysOrder.indexOf(a) - daysOrder.indexOf(b)
   );
 
   return (
@@ -122,50 +122,71 @@ const SchedulePage: React.FC<Props> = ({ group, onBack }) => {
       >
         Назад
       </button>
-      <h2 style={{ 
-        textAlign: 'center', 
-        marginBottom: '20px',
-        color: accent
-      }}>
-        Расписание для группы {group.name}
-      </h2>
-      {sortedDays.map(day => (
-        <div key={day} style={{ 
-          marginBottom: '24px',
-          backgroundColor: cardBg,
-          borderRadius: '8px',
-          padding: '16px',
-          border: `1px solid ${cardBorder}`
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <h2 style={{ 
+          textAlign: 'center', 
+          marginBottom: '20px',
+          color: accent
         }}>
-          <h3 style={{ 
+          Расписание для группы {group.name}
+        </h2>
+        {schedule && schedule.length > 0 && (
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '20px',
             color: accent,
-            marginBottom: '12px',
-            borderBottom: `1px solid ${cardBorder}`,
-            paddingBottom: '8px'
+            fontSize: '0.9em',
+            fontStyle: 'italic'
           }}>
-            {day}
-          </h3>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {scheduleByDay[day]
-              .sort((a, b) => a.time - b.time)
-              .map((lesson, idx, array) => (
-                <li key={idx} style={{ 
-                  padding: '8px 0',
-                  borderBottom: idx === array.length - 1 ? 'none' : `1px solid ${cardBorder}`
-                }}>
-                  <span style={{ 
-                    fontWeight: 'bold',
-                    color: accent,
-                    marginRight: '8px'
+            Последнее обновление: {new Date(
+              schedule.reduce((max, item) => item.lastUpdated > max ? item.lastUpdated : max, schedule[0].lastUpdated)
+            ).toLocaleString('ru-RU', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </div>
+        )}
+        {sortedDays.map(day => (
+          <div key={day} style={{ 
+            marginBottom: '24px',
+            backgroundColor: cardBg,
+            borderRadius: '8px',
+            padding: '16px',
+            border: `1px solid ${cardBorder}`
+          }}>
+            <h3 style={{ 
+              color: accent,
+              marginBottom: '12px',
+              borderBottom: `1px solid ${cardBorder}`,
+              paddingBottom: '8px'
+            }}>
+              {day}
+            </h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {scheduleByDay[day]
+                .sort((a: ScheduleItem, b: ScheduleItem) => a.time - b.time)
+                .map((lesson: ScheduleItem, idx: number, array: ScheduleItem[]) => (
+                  <li key={idx} style={{ 
+                    padding: '8px 0',
+                    borderBottom: idx === array.length - 1 ? 'none' : `1px solid ${cardBorder}`
                   }}>
-                    {lesson.time}.
-                  </span>
-                  {lesson.subject}
-                </li>
-              ))}
-          </ul>
-        </div>
-      ))}
+                    <span style={{ 
+                      fontWeight: 'bold',
+                      color: accent,
+                      marginRight: '8px'
+                    }}>
+                      {lesson.time}.
+                    </span>
+                    {lesson.subject}
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
