@@ -1,29 +1,21 @@
 import { ScheduleItem, Group } from './types';
 
-const API_BASE = ''; // или вообще убери эту строку, если она не используется
+let cachedData: any = null;
 
-export const fetchGroups = async (): Promise<Group[]> => {
-    try {
-        const response = await fetch('/api/groups');
-        if (!response.ok) {
-            throw new Error('Failed to fetch groups');
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching groups:', error);
-        throw error;
-    }
-};
+async function loadData() {
+  if (!cachedData) {
+    const res = await fetch("/schedule.json");
+    cachedData = await res.json();
+  }
+  return cachedData;
+}
 
-export const fetchSchedule = async (groupId: number): Promise<ScheduleItem[]> => {
-    try {
-        const response = await fetch(`/api/schedule/${groupId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch schedule');
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching schedule:', error);
-        throw error;
-    }
-}; 
+export async function fetchGroups() {
+  const data = await loadData();
+  return data.groups;
+}
+
+export async function fetchSchedule(groupId: number) {
+  const data = await loadData();
+  return data.schedule.filter((item: any) => item.groupId === groupId);
+} 
